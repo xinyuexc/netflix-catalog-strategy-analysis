@@ -1,0 +1,5 @@
+source_column,bridge_table,titles_with_values_raw,titles_with_values_bridge,bridge_rows,avg_values_per_title
+country,title_country,5758,5758,7179,1.25
+listed_in,title_genre,6234,6234,13670,2.19
+cast,title_cast,5664,5664,44310,7.82
+director,title_director,4265,4265,4851,1.14

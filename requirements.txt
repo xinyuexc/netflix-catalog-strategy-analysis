@@ -1,0 +1,7 @@
+jupyterlab==4.2.5
+matplotlib==3.9.2
+nbformat==5.10.4
+numpy==2.0.2
+pandas==2.2.3
+seaborn==0.13.2
+

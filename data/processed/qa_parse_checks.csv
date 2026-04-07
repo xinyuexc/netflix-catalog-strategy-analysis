@@ -1,0 +1,7 @@
+check_name,value
+duplicate_show_id_raw,0
+duplicate_show_id_titles,0
+raw_date_added_missing,11
+date_added_parse_failures_non_missing,0
+duration_parse_failures,0
+unrated_or_unknown_titles,235
