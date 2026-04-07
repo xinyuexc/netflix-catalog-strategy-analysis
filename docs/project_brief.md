@@ -1,40 +1,146 @@
 # Netflix Catalog Strategy Analysis
 
-## Project Objective
+## Project Purpose
 
-This repository frames the Netflix titles dataset as a catalog strategy problem, not a consumer behavior problem. The goal is to show portfolio-grade data analysis work that is structured, reproducible, commercially literate, and explicit about what the metadata can and cannot support.
+This repository turns the public Netflix titles metadata into a **catalog strategy** case study. The project is built for portfolio presentation and is intended to demonstrate structured, business-facing data analysis rather than casual exploration.
 
 Primary audience:
-- hiring managers for business-facing Data Analyst, BI, and Strategy Analytics roles
+- hiring managers for Data Analyst, BI, Strategy Analytics, and Analytics Engineering roles
 
-Primary analytical lens:
-- catalog composition
-- content supply structure
-- localization and international footprint
-- catalog freshness and release-to-add lag
-- audience positioning via maturity ratings
-- concentration versus diversification
+Primary objective:
+- show strong analytical judgment through reproducible data modeling, scoped interpretation, interpretable metrics, and concise communication
+
+## Source Materials
+
+- Canonical raw dataset: `data/raw/netflix_titles.csv`
+- Archived starter notebook: `data/raw/netflix-data-analysis.ipynb`
+- Source page for both: <https://www.kaggle.com/code/chirag9073/netflix-data-analysis/input>
+
+The Kaggle page above provided the raw file and an initial notebook. This repository restructures that starting point into a staged analytics project with cleaning pipelines, normalized tables, QA outputs, modular code, and portfolio-ready executive packaging.
+
+## Analytical Framing
+
+The project is designed to answer questions such as:
+
+- How is the catalog split between Movies and TV Shows?
+- Which genres, ratings, and countries dominate the library?
+- How fresh is the catalog, and how long after release are titles added?
+- How international is the catalog, and how concentrated is supply?
+- What does the maturity mix imply about audience positioning?
+- Can the catalog be summarized as a small number of interpretable strategic segments?
+- Do recurring cast and director ecosystems reveal meaningful catalog niches?
 
 ## Data Boundaries
 
-This dataset supports metadata-based catalog analysis only. It does not support claims about performance outcomes such as watch time, viewership, retention, conversion, revenue, popularity, or recommendation effectiveness.
+This dataset supports **catalog metadata analysis only**.
 
-Every later insight in this project should respect three rules:
-- stay descriptive or diagnostic unless an assumption is clearly labeled
-- do not infer title performance from catalog presence
-- do not imply causal business impact without outcome data
+It supports:
+- catalog composition
+- content mix and portfolio structure
+- geography and international footprint
+- freshness and release-to-add lag
+- rating and audience-positioning analysis
+- concentration and diversification analysis
+- interpretable title segmentation
+- repeated people and ecosystem analysis
 
-## Phase 1 Scope
+It does **not** support:
+- viewership
+- watch time
+- retention
+- revenue
+- popularity
+- conversion
+- recommendation performance
 
-Phase 1 establishes the analytical foundation:
-- inspect schema quality and missingness
-- preserve the raw file
-- create normalized processed tables
-- document cleaning decisions
+Project rule:
+- do not imply performance, causal business impact, or title success from catalog metadata alone
+
+## Repository Design Principles
+
+- preserve raw inputs
+- normalize multi-value fields into bridge tables
+- keep reusable logic in `src/`
 - add QA outputs after major transformations
-- create a reusable cleaning pipeline in `src/`
+- separate engineering, analysis, and packaging into staged notebooks
+- prefer interpretable business analysis over decorative techniques
 
-## Phase 1 Data Model
+## Phase Structure
+
+### Phase 1 — Foundations
+
+Goal:
+- build a reproducible analytical base
+
+Deliverables:
+- repo scaffold
+- cleaning pipeline in `src/cleaning.py`
+- utility functions in `src/utils.py`
+- normalized processed tables
+- QA outputs in `data/processed/`
+- `01_data_audit.ipynb`
+
+Core outputs:
+- `titles`
+- `title_country`
+- `title_genre`
+- `title_cast`
+- `title_director`
+
+### Phase 2 — Core Business Analysis
+
+Goal:
+- answer the main business-facing catalog questions
+
+Deliverables:
+- `02_feature_engineering.ipynb`
+- `03_business_analysis.ipynb`
+- metrics and charting helpers in `src/feature_engineering.py`, `src/metrics.py`, and `src/visualization.py`
+- tables and figures under `outputs/`
+
+Analytical modules:
+- catalog composition
+- freshness and release lag
+- geographic footprint
+- audience positioning
+- genre concentration and co-occurrence
+
+### Phase 3 — Advanced Analysis
+
+Goal:
+- deepen the project beyond standard slicing without losing interpretability
+
+Deliverables:
+- `04_segmentation_networks.ipynb`
+- time-evolution analysis
+- interpretable title clustering
+- people ecosystem analysis
+
+Advanced modules:
+- titles added over time
+- mix change over time
+- geographic diversification over time
+- business-readable title segments
+- recurring cast and director ecosystems
+
+### Phase 4 — Packaging
+
+Goal:
+- turn the project into a concise, public portfolio asset
+
+Deliverables:
+- `05_executive_summary.ipynb`
+- concise root `README.md`
+- final executive findings table
+- final public figure shortlist
+- homepage-ready project copy
+
+Packaging standard:
+- readable in a few minutes
+- business-facing rather than academic
+- explicit about data limitations
+
+## Data Model
 
 Base table:
 - `titles`
@@ -46,7 +152,7 @@ Base table:
   - `rating`
   - `duration`
   - `description`
-  - supporting parsed fields for `date_added`, `duration`, and rating harmonization
+  - derived parsed fields for duration, add date, and rating harmonization
 
 Bridge tables:
 - `title_country`
@@ -54,55 +160,39 @@ Bridge tables:
 - `title_cast`
 - `title_director`
 
-## Cleaning Plan
+## Key Methods
 
-### Raw data handling
-- Keep the original source file unchanged.
-- Use `data/raw/netflix_titles.csv` as the canonical pipeline input for reproducible runs.
+- schema auditing
+- missingness review
+- explicit date parsing
+- string normalization
+- bridge-table normalization
+- freshness and lag metrics
+- concentration curves and HHI-style measures
+- mix and co-occurrence analysis
+- interpretable KMeans clustering
+- constrained network analysis for people ecosystems
 
-### Column standardization
-- Validate that all expected source columns exist.
-- Trim leading and trailing whitespace from string columns.
-- Collapse repeated internal whitespace to reduce false duplicates.
+## Final Public Storyline
 
-### Date handling
-- Parse `date_added` with the explicit format `%B %d, %Y` after trimming whitespace.
-- Do not drop rows with missing `date_added`; keep missingness visible for QA and later metric design.
+The finished project should communicate five ideas clearly:
 
-### Multi-value normalization
-- Split comma-delimited values in `country`, `listed_in`, `cast`, and `director`.
-- Store normalized entities in bridge tables rather than analyzing comma-separated strings.
-- Remove duplicate `(show_id, entity)` pairs after exploding lists.
+- Netflix’s catalog is movie-led but strategically layered
+- freshness differs across content types and catalog buckets
+- international breadth increased materially, but concentration remains important
+- the library can be summarized as a few strategic segments
+- recurring creative ecosystems add differentiated depth to the analysis
 
-### Rating handling
-- Preserve the raw `rating` column.
-- Add:
-  - `rating_system`
-  - `rating_group`
-  - `is_unrated`
-- Treat `NR`, `UR`, and missing values as unknown or unrated.
-- Keep rating group definitions broad and heuristic, because movie and TV systems are not perfectly equivalent.
+## Final Deliverable Standard
 
-### Duration handling
-- Preserve the raw `duration` field.
-- Parse it into `duration_value` and `duration_unit`.
-- Standardize TV units to `season` and movie units to `min`.
+A strong final version of this project should feel:
+- polished
+- structured
+- reproducible
+- commercially literate
+- honest about limitations
 
-## QA Outputs
-
-Phase 1 should always materialize QA tables that answer:
-- Are raw title rows preserved in the cleaned base table?
-- Are `show_id` values still unique?
-- How much missingness remains in the base table?
-- Did date parsing fail beyond genuinely missing rows?
-- Do bridge tables cover the same titles that have non-null source values?
-
-## Next Analytical Steps
-
-Phase 2 should build on these outputs to answer business-facing questions about:
-- catalog composition by title type
-- freshness and release-to-add lag
-- geographic footprint and international breadth
-- maturity rating positioning
-- genre concentration and co-occurrence
-
+It should **not** feel like:
+- a generic Kaggle notebook
+- an academic methods demo
+- an over-visualized dashboard with weak interpretation
