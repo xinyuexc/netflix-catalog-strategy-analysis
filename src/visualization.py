@@ -414,3 +414,198 @@ def plot_pair_lift_heatmap(pair_lift_matrix: pd.DataFrame) -> plt.Figure:
     )
     fig.tight_layout()
     return fig
+
+
+def plot_titles_added_profile(
+    titles_added_by_year: pd.DataFrame,
+    titles_added_by_month: pd.DataFrame,
+) -> plt.Figure:
+    """Plot annual catalog adds and month-of-year seasonality."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.4))
+
+    yearly = titles_added_by_year.dropna(subset=["date_added_year"]).copy()
+    yearly["date_added_year"] = yearly["date_added_year"].astype(int)
+    year_colors = ["#C97B63" if year == yearly["date_added_year"].max() else "#537895" for year in yearly["date_added_year"]]
+    axes[0].bar(yearly["date_added_year"].astype(str), yearly["title_count"], color=year_colors)
+    axes[0].set_title("Titles added by year")
+    axes[0].set_xlabel("Year added")
+    axes[0].set_ylabel("Titles")
+    axes[0].tick_params(axis="x", rotation=45)
+
+    axes[1].bar(titles_added_by_month["month_name"], titles_added_by_month["share"], color="#A65D57")
+    axes[1].set_title("Seasonality of adds by calendar month")
+    axes[1].set_xlabel("Month")
+    axes[1].set_ylabel("Share of all title adds")
+    axes[1].yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+
+    fig.suptitle("Catalog Adds Accelerated Sharply and Show a Clear Year-End Bias", y=1.02, fontsize=15, fontweight="bold")
+    fig.tight_layout()
+    return fig
+
+
+def plot_time_mix_lines(
+    mix_df: pd.DataFrame,
+    category_column: str,
+    value_column: str,
+    title: str,
+    year_column: str = "date_added_year",
+    color_map: dict[str, str] | None = None,
+) -> plt.Figure:
+    """Plot category shares over time as line charts."""
+    fig, ax = plt.subplots(figsize=(10.5, 5.6))
+    for category, subset in mix_df.groupby(category_column):
+        ordered = subset.sort_values(year_column)
+        ax.plot(
+            ordered[year_column].astype(int),
+            ordered[value_column],
+            marker="o",
+            linewidth=2.2,
+            color=None if color_map is None else color_map.get(category),
+            label=category,
+        )
+
+    ax.set_title(title)
+    ax.set_xlabel("Year added")
+    ax.set_ylabel("Share within year")
+    ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    ax.legend(ncol=2)
+    return fig
+
+
+def plot_time_mix_heatmap(
+    matrix: pd.DataFrame,
+    title: str,
+    cmap: str = "YlOrRd",
+) -> plt.Figure:
+    """Plot a time-by-category heatmap for mix shifts."""
+    fig, ax = plt.subplots(figsize=(10.6, max(4.8, matrix.shape[0] * 0.45)))
+    _plot_heatmap(
+        ax,
+        matrix,
+        title=title,
+        cmap=cmap,
+    )
+    fig.tight_layout()
+    return fig
+
+
+def plot_geographic_diversification_over_time(diversification_df: pd.DataFrame) -> plt.Figure:
+    """Plot how geographic breadth and concentration change over time."""
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5.2))
+    ordered = diversification_df.sort_values("date_added_year").copy()
+    years = ordered["date_added_year"].astype(int)
+
+    axes[0].plot(years, ordered["distinct_countries"], marker="o", linewidth=2.3, color="#3C6E71")
+    axes[0].set_title("Distinct countries represented")
+    axes[0].set_xlabel("Year added")
+    axes[0].set_ylabel("Countries")
+
+    axes[1].plot(years, ordered["avg_countries_per_title"], marker="o", linewidth=2.3, color="#6A994E")
+    axes[1].set_title("Average countries per title")
+    axes[1].set_xlabel("Year added")
+    axes[1].set_ylabel("Country tags per title")
+
+    axes[2].plot(years, ordered["top_3_country_share"], marker="o", linewidth=2.3, color="#BC6C25", label="Top-3 share")
+    axes[2].plot(years, ordered["country_hhi"], marker="o", linewidth=2.3, color="#8C4A3B", label="HHI")
+    axes[2].set_title("Geographic concentration")
+    axes[2].set_xlabel("Year added")
+    axes[2].set_ylabel("Concentration")
+    axes[2].yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    axes[2].legend()
+
+    fig.suptitle("Geographic Diversification Expanded Fast Before Concentration Stabilized", y=1.03, fontsize=15, fontweight="bold")
+    fig.tight_layout()
+    return fig
+
+
+def plot_cluster_profile_heatmap(profile_matrix: pd.DataFrame) -> plt.Figure:
+    """Plot standardized cluster profiles across interpretable business metrics."""
+    fig, ax = plt.subplots(figsize=(11.2, max(5.2, profile_matrix.shape[0] * 0.65)))
+    _plot_heatmap(
+        ax,
+        profile_matrix,
+        title="Cluster profile heatmap (standardized versus cluster average)",
+        cmap="RdYlBu_r",
+        center=0.0,
+        value_format=".2f",
+    )
+    fig.tight_layout()
+    return fig
+
+
+def plot_cluster_sizes(
+    cluster_summary: pd.DataFrame,
+    label_column: str = "cluster_label",
+) -> plt.Figure:
+    """Plot the relative size of each title cluster."""
+    data = cluster_summary.sort_values("cluster_share").copy()
+    fig, ax = plt.subplots(figsize=(9.6, 5.4))
+    ax.barh(data[label_column], data["cluster_share"], color="#46627F")
+    _format_percent_axis(ax)
+    _annotate_barh(
+        ax,
+        data["cluster_share"],
+        [f"{share:.1%} | {count:,} titles" for share, count in zip(data["cluster_share"], data["title_count"])],
+    )
+    ax.set_title("Cluster sizes show a few strategic cores and smaller specialist pockets")
+    ax.set_xlabel("Share of titles")
+    ax.set_ylabel("")
+    return fig
+
+
+def plot_cast_ecosystem_network(
+    cast_nodes: pd.DataFrame,
+    cast_edges: pd.DataFrame,
+    label_top_n: int = 12,
+) -> plt.Figure:
+    """Plot the cast co-appearance network for recurring talent ecosystems."""
+    import networkx as nx
+
+    graph = nx.Graph()
+    for row in cast_edges.itertuples(index=False):
+        graph.add_edge(row.source, row.target, weight=row.weight)
+
+    positions = nx.spring_layout(graph, seed=42, weight="weight", k=0.72)
+    fig, ax = plt.subplots(figsize=(12.5, 9.5))
+
+    community_ids = sorted(cast_nodes["community_id"].dropna().unique())
+    community_palette = plt.cm.get_cmap("tab20", max(len(community_ids), 1))
+    size_min = cast_nodes["weighted_degree"].min()
+    size_range = max(cast_nodes["weighted_degree"].max() - size_min, 1.0)
+
+    edge_weights = cast_edges["weight"]
+    edge_span = max(edge_weights.max() - edge_weights.min(), 1)
+    edge_widths = 1.0 + ((edge_weights - edge_weights.min()) / edge_span) * 3.2
+    nx.draw_networkx_edges(
+        graph,
+        positions,
+        ax=ax,
+        width=edge_widths.tolist(),
+        edge_color="#A7A7A7",
+        alpha=0.35,
+    )
+
+    for index, community_id in enumerate(community_ids):
+        subset = cast_nodes[cast_nodes["community_id"] == community_id].copy()
+        node_sizes = 280 + ((subset["weighted_degree"] - size_min) / size_range) * 1200
+        nx.draw_networkx_nodes(
+            graph,
+            positions,
+            nodelist=subset["cast_member"].tolist(),
+            node_color=[community_palette(index)],
+            node_size=node_sizes.tolist(),
+            linewidths=0.8,
+            edgecolors="white",
+            alpha=0.92,
+            ax=ax,
+        )
+
+    labels = {
+        row.cast_member: row.cast_member
+        for row in cast_nodes.nlargest(label_top_n, "weighted_degree").itertuples(index=False)
+    }
+    nx.draw_networkx_labels(graph, positions, labels=labels, font_size=8, font_weight="bold", ax=ax)
+
+    ax.set_title("Recurring Cast Ecosystems Reveal Distinct Talent Communities in the Catalog")
+    ax.axis("off")
+    return fig

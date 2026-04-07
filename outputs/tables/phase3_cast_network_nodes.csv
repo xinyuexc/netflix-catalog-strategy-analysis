@@ -1,0 +1,45 @@
+cast_member,title_count,weighted_degree,component_id,community_id,ecosystem_label
+Anupam Kher,33,22.0,1,1,Indian film ensemble
+Akshay Kumar,26,22.0,1,1,Indian film ensemble
+Rajpal Yadav,15,17.0,1,1,Indian film ensemble
+Paresh Rawal,25,17.0,1,1,Indian film ensemble
+Om Puri,27,16.0,1,1,Indian film ensemble
+Shah Rukh Khan,30,15.0,1,1,Indian film ensemble
+Kareena Kapoor,19,13.0,1,1,Indian film ensemble
+Manoj Bajpayee,14,13.0,1,1,Indian film ensemble
+Boman Irani,23,11.0,1,1,Indian film ensemble
+Asrani,15,10.0,1,1,Indian film ensemble
+Naseeruddin Shah,27,7.0,1,1,Indian film ensemble
+Amrish Puri,14,6.0,1,1,Indian film ensemble
+Salman Khan,14,3.0,1,1,Indian film ensemble
+Ajay Devgn,15,3.0,1,1,Indian film ensemble
+Amitabh Bachchan,24,3.0,1,1,Indian film ensemble
+Andrea Libman,22,65.0,2,2,Western animation voice cluster
+Vincent Tong,18,51.0,2,2,Western animation voice cluster
+Diana Kaarina,14,38.0,2,2,Western animation voice cluster
+Ashleigh Ball,22,38.0,2,2,Western animation voice cluster
+Alessandro Juliani,14,38.0,2,2,Western animation voice cluster
+Kathleen Barr,14,34.0,2,2,Western animation voice cluster
+Tabitha St. Germain,14,32.0,2,2,Western animation voice cluster
+Tara Strong,18,24.0,2,2,Western animation voice cluster
+Brian Drummond,14,14.0,2,2,Western animation voice cluster
+Yuki Kaji,26,51.0,3,3,Anime voice cluster
+Daisuke Ono,18,45.0,3,3,Anime voice cluster
+Takahiro Sakurai,25,44.0,3,3,Anime voice cluster
+Kana Hanazawa,14,34.0,3,3,Anime voice cluster
+Mamoru Miyano,16,34.0,3,3,Anime voice cluster
+Tomokazu Sugita,15,31.0,3,3,Anime voice cluster
+Hiroshi Kamiya,14,13.0,3,3,Anime voice cluster
+Erin Fitzgerald,18,29.0,4,4,US animation and game voice cluster
+Kate Higgins,17,29.0,4,4,US animation and game voice cluster
+Laura Bailey,17,28.0,4,4,US animation and game voice cluster
+Debi Derryberry,16,22.0,4,4,US animation and game voice cluster
+Fred Tatasciore,18,6.0,4,4,US animation and game voice cluster
+Eric Idle,15,42.0,5,5,Monty Python comedy cluster
+John Cleese,22,42.0,5,5,Monty Python comedy cluster
+Michael Palin,15,42.0,5,5,Monty Python comedy cluster
+Terry Jones,14,42.0,5,5,Monty Python comedy cluster
+Gulshan Grover,18,3.0,6,6,Other recurring ecosystem 6
+Jackie Shroff,16,3.0,6,6,Other recurring ecosystem 6
+John Paul Tremblay,15,15.0,7,7,Other recurring ecosystem 7
+Robb Wells,16,15.0,7,7,Other recurring ecosystem 7

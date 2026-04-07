@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.utils import MONTH_NAME_MAP, slugify
+
 PROCESSED_TABLE_FILES = {
     "titles": "titles.csv",
     "title_country": "title_country.csv",
@@ -84,6 +86,17 @@ def build_title_features(
     return features
 
 
+def enrich_time_features(title_features: pd.DataFrame) -> pd.DataFrame:
+    """Add calendar-friendly fields used in Phase 3 time-evolution analysis."""
+    features = title_features.copy()
+    features["date_added_month_name"] = (
+        features["date_added_month"].map(MONTH_NAME_MAP).astype("string")
+    )
+    features["date_added_year_month"] = features["date_added"].dt.to_period("M").dt.to_timestamp()
+    features["is_multi_country"] = features["country_count"].gt(1)
+    return features
+
+
 def merge_titles_with_dimension(
     title_features: pd.DataFrame,
     bridge_table: pd.DataFrame,
@@ -103,6 +116,61 @@ def build_country_view(title_features: pd.DataFrame, title_country: pd.DataFrame
 def build_genre_view(title_features: pd.DataFrame, title_genre: pd.DataFrame) -> pd.DataFrame:
     """Create the title-genre analysis view."""
     return merge_titles_with_dimension(title_features, title_genre, "genre")
+
+
+def build_cast_view(title_features: pd.DataFrame, title_cast: pd.DataFrame) -> pd.DataFrame:
+    """Create the title-cast analysis view."""
+    return merge_titles_with_dimension(title_features, title_cast, "cast_member")
+
+
+def build_director_view(title_features: pd.DataFrame, title_director: pd.DataFrame) -> pd.DataFrame:
+    """Create the title-director analysis view."""
+    return merge_titles_with_dimension(title_features, title_director, "director")
+
+
+def build_segmentation_dataset(
+    title_features: pd.DataFrame,
+    title_genre: pd.DataFrame,
+    top_n_genres: int = 12,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Create an interpretable title-level dataset for clustering."""
+    segmentation = enrich_time_features(title_features).copy()
+
+    top_genres = (
+        title_genre[["show_id", "genre"]]
+        .drop_duplicates()
+        .groupby("genre")["show_id"]
+        .nunique()
+        .sort_values(ascending=False)
+        .head(top_n_genres)
+        .index
+        .tolist()
+    )
+
+    genre_flags = (
+        title_genre[["show_id", "genre"]]
+        .drop_duplicates()
+        .assign(flag=1)
+        .pivot_table(index="show_id", columns="genre", values="flag", fill_value=0)
+        .reindex(columns=top_genres, fill_value=0)
+        .astype(int)
+    )
+
+    rename_map = {genre: f"genre_flag_{slugify(genre)}" for genre in genre_flags.columns}
+    genre_flags = genre_flags.rename(columns=rename_map).reset_index()
+
+    segmentation = segmentation.merge(genre_flags, on="show_id", how="left")
+    flag_columns = list(rename_map.values())
+    segmentation[flag_columns] = segmentation[flag_columns].fillna(0).astype(int)
+
+    genre_lookup = pd.DataFrame(
+        [
+            {"genre": genre, "feature_column": feature_column}
+            for genre, feature_column in rename_map.items()
+        ]
+    )
+
+    return segmentation, genre_lookup
 
 
 def select_top_entities(

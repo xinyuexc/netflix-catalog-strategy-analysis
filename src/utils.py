@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import pandas as pd
 
@@ -28,12 +29,33 @@ MULTIVALUE_COLUMN_MAP = {
     "director": "director",
 }
 
+MONTH_NAME_MAP = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec",
+}
+
 
 def ensure_directory(path: str | Path) -> Path:
     """Create a directory when it does not exist and return it as a Path."""
     directory = Path(path)
     directory.mkdir(parents=True, exist_ok=True)
     return directory
+
+
+def slugify(value: str) -> str:
+    """Convert human-readable labels into stable lowercase identifiers."""
+    slug = re.sub(r"[^0-9a-zA-Z]+", "_", value.lower()).strip("_")
+    return slug
 
 
 def validate_columns(

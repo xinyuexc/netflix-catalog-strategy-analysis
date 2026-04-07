@@ -1,0 +1,7 @@
+cluster_id,cluster_label,business_definition
+0,Recent International Movie Core,Recent movie-heavy cluster with quick catalog entry and strong international genre coverage.
+1,Legacy Mainstream Library,"Older, longer-lag library titles anchored in mainstream movie genres with some spillover TV inventory."
+2,Recent International TV Series,"Very recent TV-first cluster centered on international drama, crime, and serialized formats."
+3,Deep Library Classics,Small deep-library pocket dominated by classic and long-lag film inventory.
+4,Multi-country Co-productions,Cross-border co-production cluster with the broadest country footprint per title.
+5,Current Factual and Family Programming,"Recent factual, stand-up, and family-oriented programming cluster with strong US skew."
