@@ -1,0 +1,10 @@
+check_name,value
+titles_row_count,6234
+distinct_show_id,6234
+negative_lag_titles,9
+valid_lag_titles,6214
+missing_country_titles,476
+single_country_titles,4838
+multi_country_titles,920
+country_view_rows,7179
+genre_view_rows,13670

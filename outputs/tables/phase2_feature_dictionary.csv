@@ -1,0 +1,10 @@
+feature_name,level,definition,business_use
+country_count,title,Number of normalized country tags attached to a title,Measure supply breadth and identify single-country versus multi-country titles
+genre_count,title,Number of normalized genre tags attached to a title,Measure category breadth and support co-occurrence analysis
+release_to_add_lag,title,Raw difference between year_added and release_year,Quantify how quickly titles enter the catalog after release
+is_valid_release_to_add_lag,title,Flag for non-negative release-to-add lag,Separate usable freshness signals from metadata anomalies
+release_to_add_lag_clean,title,Release-to-add lag with negative values removed,Primary freshness metric for Phase 2 reporting
+country_scope,title,"Missing country, Single-country, or Multi-country title scope",Support geographic footprint and co-production analysis
+is_recent_within_1y,title,Title added within 1 year of release,Measure near-current catalog freshness
+is_recent_within_3y,title,Title added within 3 years of release,Primary recent-share freshness KPI
+is_recent_within_5y,title,Title added within 5 years of release,Broader freshness KPI for slower-moving categories

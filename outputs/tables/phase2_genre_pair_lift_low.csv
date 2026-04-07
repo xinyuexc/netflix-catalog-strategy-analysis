@@ -1,0 +1,13 @@
+entity_a,entity_b,pair_count,expected_count,lift,pair_share_of_titles,entity_a_title_count,entity_b_title_count
+Action & Adventure,International TV Shows,0,95.8609239653513,0.0,0.0,597,1001
+Action & Adventure,TV Comedies,0,41.753609239653514,0.0,0.0,597,436
+Action & Adventure,TV Dramas,0,57.36333012512031,0.0,0.0,597,599
+Children & Family Movies,International TV Shows,0,60.695861405197306,0.0,0.0,378,1001
+Children & Family Movies,TV Dramas,0,36.32050048123195,0.0,0.0,378,599
+Comedies,International TV Shows,0,178.71559191530318,0.0,0.0,1113,1001
+Comedies,TV Comedies,0,77.84215591915303,0.0,0.0,1113,436
+Comedies,TV Dramas,0,106.9436958614052,0.0,0.0,1113,599
+Documentaries,Independent Movies,0,59.14918190567854,0.0,0.0,668,552
+Documentaries,International TV Shows,0,107.2614693615656,0.0,0.0,668,1001
+Documentaries,Romantic Movies,0,40.290022457491176,0.0,0.0,668,376
+Documentaries,TV Comedies,0,46.719281360282324,0.0,0.0,668,436
