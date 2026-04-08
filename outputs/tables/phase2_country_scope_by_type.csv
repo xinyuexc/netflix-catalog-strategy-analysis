@@ -1,7 +1,7 @@
 type,country_scope,title_count,group_total,share_within_group
-Movie,Missing country,195,4265,0.04572098475967175
-Movie,Single-country,3335,4265,0.7819460726846424
-Movie,Multi-country,735,4265,0.17233294255568582
-TV Show,Missing country,281,1969,0.14271203656678516
-TV Show,Single-country,1503,1969,0.7633316404266125
-TV Show,Multi-country,185,1969,0.09395632300660234
+Movie,Missing country,440,6131,0.0717664328820747
+Movie,Single-country,4620,6131,0.7535475452617844
+Movie,Multi-country,1071,6131,0.17468602185614093
+TV Show,Missing country,391,2676,0.1461136023916293
+TV Show,Single-country,2041,2676,0.7627055306427504
+TV Show,Multi-country,244,2676,0.09118086696562033

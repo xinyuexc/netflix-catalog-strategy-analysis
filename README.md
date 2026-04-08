@@ -34,10 +34,10 @@ The dataset supports catalog structure analysis. It does **not** support claims 
 ## Data Source and Attribution
 
 - Raw file: `data/raw/netflix_titles.csv`
-- Archived starter notebook: `data/raw/netflix-data-analysis.ipynb`
-- Source page for both the raw dataset and starter notebook: <https://www.kaggle.com/code/chirag9073/netflix-data-analysis/input>
+- Original starter notebook copy: `data/raw/netflix-data-analysis.ipynb`
+- Source and original starter notebook: <https://www.kaggle.com/code/chirag9073/netflix-data-analysis/input>
 
-The raw dataset and the starter notebook in `data/raw/` were sourced from that Kaggle page. This repository then restructures the starting materials into a reproducible analytics project with cleaning pipelines, normalized tables, QA outputs, business-facing interpretation, and portfolio packaging.
+The raw dataset and the initial exploratory notebook in this repo were sourced from that Kaggle page. This repository then restructures the work into a reproducible analytics project with cleaning pipelines, normalized tables, QA outputs, business-facing interpretation, and portfolio packaging.
 
 ## Notebook Map
 
@@ -53,8 +53,6 @@ The raw dataset and the starter notebook in `data/raw/` were sourced from that K
 netflix-catalog-strategy-analysis/
 ├─ data/
 │  ├─ raw/
-│  │  ├─ netflix_titles.csv
-│  │  └─ netflix-data-analysis.ipynb
 │  └─ processed/
 ├─ notebooks/
 ├─ src/
@@ -63,7 +61,6 @@ netflix-catalog-strategy-analysis/
 │  ├─ tables/
 │  └─ summary/
 ├─ docs/
-│  └─ project_brief.md
 ├─ requirements.txt
 └─ README.md
 ```
@@ -77,10 +74,10 @@ python -m src.cleaning --input data/raw/netflix_titles.csv --output data/process
 
 Then run notebooks `01` through `05` in order.
 
-## Project Documents
-
-- `docs/project_brief.md`: full-project brief covering scope, data boundaries, phase plan, methods, and portfolio packaging
-- `data/raw/netflix-data-analysis.ipynb`: archived starter notebook retained for provenance only, not as the main analytical workflow
+Important rerun note:
+- `01_data_audit.ipynb` is the notebook that rebuilds and overwrites `data/processed/` from the current raw file in `data/raw/netflix_titles.csv`
+- notebooks `02` to `05` depend on those refreshed processed tables and do not replace the Phase 1 cleaning step
+- if you keep archived raw snapshots such as `data/raw/netflix_titles_old.csv`, they are reference files only unless you explicitly switch the Phase 1 input path
 
 ## Strongest Public Outputs
 

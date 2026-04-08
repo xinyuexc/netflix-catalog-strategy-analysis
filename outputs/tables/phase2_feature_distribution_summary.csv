@@ -1,4 +1,4 @@
 metric,mean,median,p75,max
-country_count,1.1515880654475457,1.0,1.0,12
-genre_count,2.1928136028232275,2.0,3.0,3
-release_to_add_lag_clean,4.629707112970712,1.0,5.0,93
+country_count,1.1368229817190871,1.0,1.0,12
+genre_count,2.194050187350971,2.0,3.0,3
+release_to_add_lag_clean,4.697825344415348,1.0,5.0,93

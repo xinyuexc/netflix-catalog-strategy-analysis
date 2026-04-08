@@ -5,3 +5,4 @@ __pycache__/
 *.py[cod]
 /project_brief_zh.md
 /project_brief_zh.md.md
+/data/raw/netflix_titles_old.csv
