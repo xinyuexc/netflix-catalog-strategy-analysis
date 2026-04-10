@@ -30,36 +30,18 @@ This dataset supports **catalog structure analysis**. It does **not** support cl
 
 ### Notebooks
 
-- [`notebooks/01_data_audit.ipynb`](notebooks/01_data_audit.ipynb) — schema review, missingness, parse quality, and QA checks
-- [`notebooks/02_feature_engineering.ipynb`](notebooks/02_feature_engineering.ipynb) — title-level analytical layer built from normalized tables
-- [`notebooks/03_business_analysis.ipynb`](notebooks/03_business_analysis.ipynb) — catalog mix, freshness, geography, audience positioning, and genre relationships
-- [`notebooks/04_segmentation_networks.ipynb`](notebooks/04_segmentation_networks.ipynb) — time evolution, interpretable clustering, and people ecosystems
-- [`notebooks/05_executive_summary.ipynb`](notebooks/05_executive_summary.ipynb) — final summary for business readers and public portfolio packaging
+- [`01_data_audit.ipynb`](notebooks/01_data_audit.ipynb) — schema review, missingness, parse quality, and QA checks
+- [`02_feature_engineering.ipynb`](notebooks/02_feature_engineering.ipynb) — title-level analytical layer built from normalized tables
+- [`03_business_analysis.ipynb`](notebooks/03_business_analysis.ipynb) — catalog mix, freshness, geography, audience positioning, and genre relationships
+- [`04_segmentation_networks.ipynb`](notebooks/04_segmentation_networks.ipynb) — time evolution, interpretable clustering, and people ecosystems
+- [`05_executive_summary.ipynb`](notebooks/05_executive_summary.ipynb) — final summary for business readers and public portfolio packaging
 
 ### Data Source
 
-- Raw data: [`data/raw/netflix_titles.csv`](data/raw/netflix_titles.csv) Source: [Kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows)
-- Archived starter notebook: [`data/raw/netflix-data-analysis.ipynb`](data/raw/netflix-data-analysis.ipynb) Source: [Kaggle](https://www.kaggle.com/code/chirag9073/netflix-data-analysis/notebook)
+- Raw data: [`netflix_titles.csv`](data/raw/netflix_titles.csv) [Source](https://www.kaggle.com/datasets/shivamb/netflix-shows)
+- Archived starter notebook: [`netflix-data-analysis.ipynb`](data/raw/netflix-data-analysis.ipynb) [Source](https://www.kaggle.com/code/chirag9073/netflix-data-analysis/notebook)
 
 The raw dataset and the initial exploratory notebook in this repo were sourced from that Kaggle page. This repository then restructures the work into a reproducible analytics project with cleaning pipelines, normalized tables, QA outputs, business-facing interpretation, and portfolio packaging.
-
-## Repository Structure
-
-```text
-netflix-catalog-strategy-analysis/
-├─ data/
-│  ├─ raw/
-│  └─ processed/
-├─ notebooks/
-├─ src/
-├─ outputs/
-│  ├─ figures/
-│  ├─ tables/
-│  └─ summary/
-├─ docs/
-├─ requirements.txt
-└─ README.md
-```
 
 ## Reproduce the Project
 
@@ -69,15 +51,15 @@ python -m src.cleaning --input data/raw/netflix_titles.csv --output data/process
 ```
 Then run notebooks `01` through `05` in order.
 
-## Strongest Public Outputs
+## Strongest Outputs
 
-- [`outputs/figures/phase2_03_genre_mix_by_type.png`](outputs/figures/phase2_03_genre_mix_by_type.png)
-- [`outputs/figures/phase2_04_concentration_curves.png`](outputs/figures/phase2_04_concentration_curves.png)
-- [`outputs/figures/phase2_06_release_to_add_lag_by_type.png`](outputs/figures/phase2_06_release_to_add_lag_by_type.png)
-- [`outputs/figures/phase3_01_titles_added_profile.png`](outputs/figures/phase3_01_titles_added_profile.png)
-- [`outputs/figures/phase3_05_geographic_diversification_over_time.png`](outputs/figures/phase3_05_geographic_diversification_over_time.png)
-- [`outputs/figures/phase3_07_cluster_profile_heatmap.png`](outputs/figures/phase3_07_cluster_profile_heatmap.png)
-- [`outputs/figures/phase3_08_cast_ecosystem_network.png`](outputs/figures/phase3_08_cast_ecosystem_network.png)
+- [`genre_mix_by_type.png`](outputs/figures/phase2_03_genre_mix_by_type.png)
+- [`concentration_curves.png`](outputs/figures/phase2_04_concentration_curves.png)
+- [`release_to_add_lag_by_type.png`](outputs/figures/phase2_06_release_to_add_lag_by_type.png)
+- [`titles_added_profile.png`](outputs/figures/phase3_01_titles_added_profile.png)
+- [`geographic_diversification_over_time.png`](outputs/figures/phase3_05_geographic_diversification_over_time.png)
+- [`cluster_profile_heatmap.png`](outputs/figures/phase3_07_cluster_profile_heatmap.png)
+- [`cast_ecosystem_network.png`](outputs/figures/phase3_08_cast_ecosystem_network.png)
 
 
 ## Limits
