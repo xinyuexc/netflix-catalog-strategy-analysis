@@ -28,7 +28,7 @@
 
 ## Data limitations discovered
 
-- `date_added_year = 2020` remains a partial snapshot and should not be read as a full-year trend endpoint.
+- `date_added_year = 2021` is the partial snapshot year in the refreshed dataset and should not be read as a full-year trend endpoint.
 - Country-based time evolution still reflects country tags, not exclusive production ownership or market share.
 - People analysis is limited by credit completeness in `cast` and `director`; missing credits reduce network coverage.
 - Repeated presence in the catalog does not imply audience demand, strategic success, or economic value.

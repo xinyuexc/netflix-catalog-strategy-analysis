@@ -27,7 +27,7 @@
 ## Data Limitations
 
 - Country totals reflect title-country tags and are not mutually exclusive shares.
-- `date_added_year = 2020` is snapshot-limited and should not be treated as a full-year trend.
+- `date_added_year = 2021` is snapshot-limited because the current dataset runs through September 25, 2021, so it should not be treated as a full-year trend.
 - Missing country metadata is materially higher for TV Shows than for Movies.
 - The dataset supports catalog structure, not content performance.
 

@@ -28,5 +28,5 @@ Netflix Catalog Strategy Analysis is a portfolio-grade data analysis project tha
 
 - The dataset does not include viewership, watch time, retention, revenue, or popularity.
 - Country tags are not exclusive production shares or market shares.
-- `2020` is a partial snapshot year in the add-date timeline.
+- `2021` is a partial snapshot year in the add-date timeline because the current data runs through September 25, 2021.
 - Cast and director analysis depends on metadata completeness.

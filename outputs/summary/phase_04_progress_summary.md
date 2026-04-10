@@ -31,5 +31,5 @@ This project is best presented as a business-oriented catalog strategy case stud
 
 - metadata-only analysis
 - no outcome or performance attribution
-- partial `2020` add-date year
+- partial `2021` add-date year because the refreshed dataset currently runs through September 25, 2021
 - incomplete people credits for some titles

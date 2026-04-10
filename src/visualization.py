@@ -32,15 +32,16 @@ def apply_report_style() -> None:
     plt.rcParams.update(
         {
             "font.size": 10,
-            "axes.titlesize": 14,
+            "axes.titlesize": 13,
             "axes.titleweight": "bold",
             "axes.labelsize": 11,
             "axes.spines.top": False,
             "axes.spines.right": False,
-            "axes.grid": True,
+            "axes.grid": False,
             "axes.axisbelow": True,
             "grid.color": "#D9D9D9",
             "grid.linewidth": 0.7,
+            "grid.alpha": 0.9,
             "figure.facecolor": "white",
             "axes.facecolor": "white",
             "legend.frameon": False,
@@ -62,6 +63,31 @@ def _format_percent_axis(ax: plt.Axes, xmax: float = 1.0) -> None:
     ax.xaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
 
 
+def _apply_value_axis_grid(ax: plt.Axes, value_axis: str) -> None:
+    """Keep gridlines only on the numeric axis to reduce visual clutter."""
+    ax.grid(False)
+    ax.grid(axis=value_axis, color="#D9D9D9", linewidth=0.7, alpha=0.9)
+
+
+def _place_legend_below(ax: plt.Axes, ncol: int = 3, y: float = -0.16) -> None:
+    """Place legends below the plotting area so they never sit on top of marks."""
+    handles, labels = ax.get_legend_handles_labels()
+    if not handles:
+        return
+    ax.legend(
+        handles,
+        labels,
+        loc="upper center",
+        bbox_to_anchor=(0.5, y),
+        ncol=min(ncol, len(handles)),
+        borderaxespad=0.0,
+    )
+
+
+def _set_figure_title(fig: plt.Figure, title: str, y: float = 1.01) -> None:
+    fig.suptitle(title, y=y, fontsize=14, fontweight="bold")
+
+
 def _annotate_barh(ax: plt.Axes, values: pd.Series, labels: list[str]) -> None:
     for index, value in enumerate(values):
         ax.text(value + 0.01, index, labels[index], va="center", ha="left", fontsize=9)
@@ -72,8 +98,9 @@ def plot_type_mix(type_mix: pd.DataFrame) -> plt.Figure:
     data = type_mix.sort_values("share")
     fig, ax = plt.subplots(figsize=(8, 4.6))
     colors = [TYPE_COLORS.get(value, "#6F6F6F") for value in data["type"]]
-    ax.barh(data["type"], data["share"], color=colors)
+    ax.barh(data["type"], data["share"], color=colors, height=0.62)
     _format_percent_axis(ax)
+    _apply_value_axis_grid(ax, "x")
     _annotate_barh(
         ax,
         data["share"],
@@ -82,6 +109,7 @@ def plot_type_mix(type_mix: pd.DataFrame) -> plt.Figure:
     ax.set_title("Catalog Mix: Movies Still Dominate the Library")
     ax.set_xlabel("Share of titles")
     ax.set_ylabel("")
+    fig.tight_layout()
     return fig
 
 
@@ -101,7 +129,7 @@ def plot_stacked_mix(
     if category_order is not None:
         pivot = pivot.reindex(columns=category_order)
 
-    fig, ax = plt.subplots(figsize=(9, 5.2))
+    fig, ax = plt.subplots(figsize=(9.4, 5.4))
     left = np.zeros(len(pivot))
     for category in pivot.columns:
         values = pivot[category].values
@@ -111,14 +139,17 @@ def plot_stacked_mix(
             left=left,
             color=color_map.get(category, "#6F6F6F"),
             label=category,
+            height=0.78,
         )
         left = left + values
 
     _format_percent_axis(ax)
+    _apply_value_axis_grid(ax, "x")
     ax.set_title(title)
     ax.set_xlabel("Share within group")
     ax.set_ylabel("")
-    ax.legend(loc="lower right", ncol=2)
+    _place_legend_below(ax, ncol=3, y=-0.18)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     return fig
 
 
@@ -127,7 +158,7 @@ def plot_top_genres_by_type(genre_mix_by_type: pd.DataFrame, top_n: int = 10) ->
     filtered = genre_mix_by_type[genre_mix_by_type["rank_within_group"] <= top_n].copy()
     groups = filtered["type"].drop_duplicates().tolist()
 
-    fig, axes = plt.subplots(1, len(groups), figsize=(14, 6), sharex=True)
+    fig, axes = plt.subplots(1, len(groups), figsize=(14, 6.2), sharex=True)
     if len(groups) == 1:
         axes = [axes]
 
@@ -137,15 +168,17 @@ def plot_top_genres_by_type(genre_mix_by_type: pd.DataFrame, top_n: int = 10) ->
             subset["genre"],
             subset["share_within_group"],
             color=TYPE_COLORS.get(group, "#6F6F6F"),
+            height=0.72,
         )
         _format_percent_axis(ax, xmax=max(0.24, subset["share_within_group"].max() * 1.15))
+        _apply_value_axis_grid(ax, "x")
         ax.set_title(group)
         ax.set_xlabel("Share within type")
         ax.set_ylabel("")
         ax.tick_params(axis="y", labelsize=9)
 
-    fig.suptitle("Genre Mix by Type Highlights Distinct Catalog Roles", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Genre Mix by Type Highlights Distinct Catalog Roles", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     return fig
 
 
@@ -154,7 +187,7 @@ def plot_concentration_curves(
     country_curve: pd.DataFrame,
 ) -> plt.Figure:
     """Plot cumulative share curves for genres and countries."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(13.2, 5.2))
     curve_specs = [
         (axes[0], genre_curve, "genre", "Genre concentration"),
         (axes[1], country_curve, "country", "Country concentration"),
@@ -164,13 +197,14 @@ def plot_concentration_curves(
         ax.plot(frame["entity_rank"], frame["cumulative_share"], color="#1F4E79", linewidth=2.5)
         ax.axhline(0.5, color="#999999", linestyle="--", linewidth=1)
         ax.axhline(0.8, color="#CCCCCC", linestyle="--", linewidth=1)
+        _apply_value_axis_grid(ax, "y")
         ax.set_title(title)
         ax.set_xlabel(f"Top {column}s included")
         ax.set_ylabel("Cumulative share")
         ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
 
-    fig.suptitle("Concentration Curves Show a Narrow Country Core and a Moderate Genre Long Tail", y=1.03, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Concentration Curves Show a Narrow Country Core and a Moderate Genre Long Tail", y=1.02)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     return fig
 
 
@@ -179,28 +213,35 @@ def plot_year_distributions(
     year_added_distribution: pd.DataFrame,
 ) -> plt.Figure:
     """Plot release-year and year-added distributions side by side."""
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.2))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.4))
 
     axes[0].bar(
         release_year_distribution["release_year"].astype(int),
         release_year_distribution["title_count"],
         color="#507B9C",
     )
+    _apply_value_axis_grid(axes[0], "y")
     axes[0].set_title("Original release year distribution")
     axes[0].set_xlabel("Release year")
     axes[0].set_ylabel("Titles")
+    release_years = release_year_distribution["release_year"].astype(int)
+    if len(release_years) > 0:
+        tick_step = 10 if release_years.max() - release_years.min() > 40 else 5
+        axes[0].set_xticks(np.arange(release_years.min() - release_years.min() % tick_step, release_years.max() + 1, tick_step))
 
     axes[1].bar(
         year_added_distribution["date_added_year"].astype(int),
         year_added_distribution["title_count"],
         color="#C27C2C",
     )
+    _apply_value_axis_grid(axes[1], "y")
     axes[1].set_title("Titles added to Netflix by year")
     axes[1].set_xlabel("Year added")
     axes[1].set_ylabel("Titles")
+    axes[1].set_xticks(year_added_distribution["date_added_year"].astype(int).tolist())
 
-    fig.suptitle("Catalog Growth Came from Recent Releases and a Late Acceleration in Adds", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Catalog Growth Came from Recent Releases and a Late Acceleration in Adds", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     return fig
 
 
@@ -209,7 +250,7 @@ def plot_release_lag_by_type(title_features: pd.DataFrame) -> plt.Figure:
     data = title_features[title_features["release_to_add_lag_clean"].notna()].copy()
     groups = ["Movie", "TV Show"]
 
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.2))
+    fig, axes = plt.subplots(1, 2, figsize=(13.2, 5.4))
     lag_values = [
         data.loc[data["type"] == group, "release_to_add_lag_clean"].astype(float).values
         for group in groups
@@ -218,17 +259,19 @@ def plot_release_lag_by_type(title_features: pd.DataFrame) -> plt.Figure:
     for patch, group in zip(box["boxes"], groups):
         patch.set_facecolor(TYPE_COLORS.get(group, "#6F6F6F"))
         patch.set_alpha(0.75)
+    _apply_value_axis_grid(axes[0], "y")
     axes[0].set_title("Release-to-add lag by type")
     axes[0].set_ylabel("Years between release and add")
 
     clipped = data["release_to_add_lag_clean"].clip(upper=20)
     axes[1].hist(clipped, bins=21, color="#4F6D7A", edgecolor="white")
+    _apply_value_axis_grid(axes[1], "y")
     axes[1].set_title("Overall lag distribution (clipped at 20 years)")
     axes[1].set_xlabel("Release-to-add lag (years)")
     axes[1].set_ylabel("Titles")
 
-    fig.suptitle("Most Titles Were Added Quickly, but Movies Carry a Longer Legacy Tail", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Most Titles Were Added Quickly, but Movies Carry a Longer Legacy Tail", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     return fig
 
 
@@ -239,7 +282,7 @@ def plot_freshness_panels(
     freshness_by_country: pd.DataFrame,
 ) -> plt.Figure:
     """Plot share of titles added within three years across key dimensions."""
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig, axes = plt.subplots(2, 2, figsize=(14.2, 10.2))
     panels = [
         (axes[0, 0], freshness_by_type.sort_values("share_recent_3y"), "type", "Freshness by type"),
         (
@@ -263,15 +306,16 @@ def plot_freshness_panels(
     ]
 
     for ax, frame, label_column, title in panels:
-        ax.barh(frame[label_column], frame["share_recent_3y"], color="#4D9078")
+        ax.barh(frame[label_column], frame["share_recent_3y"], color="#4D9078", height=0.7)
         _format_percent_axis(ax)
+        _apply_value_axis_grid(ax, "x")
         ax.set_title(title)
         ax.set_xlabel("Share added within 3 years of release")
         ax.set_ylabel("")
         ax.tick_params(axis="y", labelsize=9)
 
-    fig.suptitle("Freshness Is Strongest in TV-Led and Internationally Expanding Segments", y=1.01, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Freshness Is Strongest in TV-Led and Internationally Expanding Segments", y=1.0)
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
     return fig
 
 
@@ -280,11 +324,12 @@ def plot_country_footprint(
     country_scope_by_type: pd.DataFrame,
 ) -> plt.Figure:
     """Plot the country ranking and single- versus multi-country mix."""
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
+    fig, axes = plt.subplots(1, 2, figsize=(14.4, 5.8))
 
     top_countries = country_ranking.head(12).sort_values("share")
-    axes[0].barh(top_countries["country"], top_countries["share"], color="#46627F")
+    axes[0].barh(top_countries["country"], top_countries["share"], color="#46627F", height=0.72)
     _format_percent_axis(axes[0], xmax=max(0.16, top_countries["share"].max() * 1.15))
+    _apply_value_axis_grid(axes[0], "x")
     axes[0].set_title("Top production countries in the catalog")
     axes[0].set_xlabel("Share of country-tagged titles")
     axes[0].set_ylabel("")
@@ -300,22 +345,24 @@ def plot_country_footprint(
             left=left,
             color=COUNTRY_SCOPE_COLORS.get(scope, "#6F6F6F"),
             label=scope,
+            height=0.78,
         )
         left = left + pivot[scope].values
     _format_percent_axis(axes[1])
+    _apply_value_axis_grid(axes[1], "x")
     axes[1].set_title("Single-country versus multi-country mix")
     axes[1].set_xlabel("Share within type")
     axes[1].set_ylabel("")
-    axes[1].legend(loc="lower right")
+    _place_legend_below(axes[1], ncol=3, y=-0.18)
 
-    fig.suptitle("The Geographic Footprint Is International but Built on a Dominant Core", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "The Geographic Footprint Is International but Built on a Dominant Core", y=1.01)
+    fig.tight_layout(rect=(0, 0.08, 1, 0.96))
     return fig
 
 
 def plot_country_mix_over_time(country_mix_over_time: pd.DataFrame) -> plt.Figure:
     """Plot how the top countries evolve across year_added."""
-    fig, ax = plt.subplots(figsize=(10.5, 5.6))
+    fig, ax = plt.subplots(figsize=(10.8, 5.8))
     for country, subset in country_mix_over_time.groupby("country"):
         ordered = subset.sort_values("date_added_year")
         ax.plot(
@@ -325,10 +372,13 @@ def plot_country_mix_over_time(country_mix_over_time: pd.DataFrame) -> plt.Figur
             linewidth=2.2,
             label=country,
         )
+    _apply_value_axis_grid(ax, "y")
     ax.set_title("Country mix over time for the leading production geographies")
     ax.set_xlabel("Year added")
     ax.set_ylabel("Titles")
-    ax.legend(ncol=2)
+    ax.set_xticks(sorted(country_mix_over_time["date_added_year"].dropna().astype(int).unique()))
+    _place_legend_below(ax, ncol=3, y=-0.18)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     return fig
 
 
@@ -341,6 +391,7 @@ def _plot_heatmap(
     value_format: str = ".0%",
 ) -> None:
     values = matrix.values.astype(float)
+    ax.grid(False)
     if center is None:
         image = ax.imshow(values, cmap=cmap, aspect="auto")
     else:
@@ -396,8 +447,8 @@ def plot_rating_heatmaps(
         "Rating mix across top countries",
         cmap="YlOrRd",
     )
-    fig.suptitle("Audience Positioning Shifts Meaningfully Across Genres and Countries", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Audience Positioning Shifts Meaningfully Across Genres and Countries", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
     return fig
 
 
@@ -421,25 +472,28 @@ def plot_titles_added_profile(
     titles_added_by_month: pd.DataFrame,
 ) -> plt.Figure:
     """Plot annual catalog adds and month-of-year seasonality."""
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.4))
+    fig, axes = plt.subplots(1, 2, figsize=(14.2, 5.6))
 
     yearly = titles_added_by_year.dropna(subset=["date_added_year"]).copy()
     yearly["date_added_year"] = yearly["date_added_year"].astype(int)
     year_colors = ["#C97B63" if year == yearly["date_added_year"].max() else "#537895" for year in yearly["date_added_year"]]
     axes[0].bar(yearly["date_added_year"].astype(str), yearly["title_count"], color=year_colors)
+    _apply_value_axis_grid(axes[0], "y")
     axes[0].set_title("Titles added by year")
     axes[0].set_xlabel("Year added")
     axes[0].set_ylabel("Titles")
     axes[0].tick_params(axis="x", rotation=45)
 
     axes[1].bar(titles_added_by_month["month_name"], titles_added_by_month["share"], color="#A65D57")
+    _apply_value_axis_grid(axes[1], "y")
     axes[1].set_title("Seasonality of adds by calendar month")
     axes[1].set_xlabel("Month")
     axes[1].set_ylabel("Share of all title adds")
     axes[1].yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+    axes[1].tick_params(axis="x", rotation=35)
 
-    fig.suptitle("Catalog Adds Accelerated Sharply and Show a Clear Year-End Bias", y=1.02, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Catalog Adds Accelerated Sharply and Show a Clear Year-End Bias", y=1.01)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     return fig
 
 
@@ -452,7 +506,7 @@ def plot_time_mix_lines(
     color_map: dict[str, str] | None = None,
 ) -> plt.Figure:
     """Plot category shares over time as line charts."""
-    fig, ax = plt.subplots(figsize=(10.5, 5.6))
+    fig, ax = plt.subplots(figsize=(10.8, 5.8))
     for category, subset in mix_df.groupby(category_column):
         ordered = subset.sort_values(year_column)
         ax.plot(
@@ -464,11 +518,14 @@ def plot_time_mix_lines(
             label=category,
         )
 
+    _apply_value_axis_grid(ax, "y")
     ax.set_title(title)
     ax.set_xlabel("Year added")
     ax.set_ylabel("Share within year")
     ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
-    ax.legend(ncol=2)
+    ax.set_xticks(sorted(mix_df[year_column].dropna().astype(int).unique()))
+    _place_legend_below(ax, ncol=3, y=-0.18)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     return fig
 
 
@@ -491,30 +548,36 @@ def plot_time_mix_heatmap(
 
 def plot_geographic_diversification_over_time(diversification_df: pd.DataFrame) -> plt.Figure:
     """Plot how geographic breadth and concentration change over time."""
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5.2))
+    fig, axes = plt.subplots(1, 3, figsize=(15.4, 5.5))
     ordered = diversification_df.sort_values("date_added_year").copy()
     years = ordered["date_added_year"].astype(int)
 
     axes[0].plot(years, ordered["distinct_countries"], marker="o", linewidth=2.3, color="#3C6E71")
+    _apply_value_axis_grid(axes[0], "y")
     axes[0].set_title("Distinct countries represented")
     axes[0].set_xlabel("Year added")
     axes[0].set_ylabel("Countries")
+    axes[0].set_xticks(years.tolist())
 
     axes[1].plot(years, ordered["avg_countries_per_title"], marker="o", linewidth=2.3, color="#6A994E")
+    _apply_value_axis_grid(axes[1], "y")
     axes[1].set_title("Average countries per title")
     axes[1].set_xlabel("Year added")
     axes[1].set_ylabel("Country tags per title")
+    axes[1].set_xticks(years.tolist())
 
     axes[2].plot(years, ordered["top_3_country_share"], marker="o", linewidth=2.3, color="#BC6C25", label="Top-3 share")
     axes[2].plot(years, ordered["country_hhi"], marker="o", linewidth=2.3, color="#8C4A3B", label="HHI")
+    _apply_value_axis_grid(axes[2], "y")
     axes[2].set_title("Geographic concentration")
     axes[2].set_xlabel("Year added")
     axes[2].set_ylabel("Concentration")
     axes[2].yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
-    axes[2].legend()
+    axes[2].set_xticks(years.tolist())
+    _place_legend_below(axes[2], ncol=2, y=-0.18)
 
-    fig.suptitle("Geographic Diversification Expanded Fast Before Concentration Stabilized", y=1.03, fontsize=15, fontweight="bold")
-    fig.tight_layout()
+    _set_figure_title(fig, "Geographic Diversification Expanded Fast Before Concentration Stabilized", y=1.02)
+    fig.tight_layout(rect=(0, 0.08, 1, 0.96))
     return fig
 
 
@@ -539,9 +602,10 @@ def plot_cluster_sizes(
 ) -> plt.Figure:
     """Plot the relative size of each title cluster."""
     data = cluster_summary.sort_values("cluster_share").copy()
-    fig, ax = plt.subplots(figsize=(9.6, 5.4))
-    ax.barh(data[label_column], data["cluster_share"], color="#46627F")
+    fig, ax = plt.subplots(figsize=(10.0, 5.8))
+    ax.barh(data[label_column], data["cluster_share"], color="#46627F", height=0.72)
     _format_percent_axis(ax)
+    _apply_value_axis_grid(ax, "x")
     _annotate_barh(
         ax,
         data["cluster_share"],
@@ -550,6 +614,7 @@ def plot_cluster_sizes(
     ax.set_title("Cluster sizes show a few strategic cores and smaller specialist pockets")
     ax.set_xlabel("Share of titles")
     ax.set_ylabel("")
+    fig.tight_layout()
     return fig
 
 
